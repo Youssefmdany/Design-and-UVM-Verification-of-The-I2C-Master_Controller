@@ -262,7 +262,7 @@ always_comb begin
 						 
 						   Restart_CMD: begin 
 							
-				             State_next = restart;
+				                            State_next = restart;
 							  
 							
 							end
