@@ -3,27 +3,26 @@
 
 
 module I2C_Master#( 
-                   
-						 parameter Start_CMD = 3'b000,
-						 parameter Stop_CMD = 3'b001,
-						 parameter Read_CMD = 3'b010,
-						 parameter Write_CMD = 3'b011,
-						 parameter Restart_CMD = 3'b100
-                                                    ) 
+				 parameter Start_CMD = 3'b000,
+				 parameter Stop_CMD = 3'b001,
+				 parameter Read_CMD = 3'b010,
+				 parameter Write_CMD = 3'b011,
+				 parameter Restart_CMD = 3'b100
+                                                                     ) 
                
-				  	  (
-           	input logic clk,
-						input logic reset,
-						input logic wr_i2c,
-            input logic[7:0]  data_in,
-            input logic[2:0] cmd,
-						input logic[15:0] dvsr,
-						output logic[7:0] data_out,
-						output logic ready,
-						output logic done_tick,
-						output logic ACK,
-						output tri SCL,
-						inout tri SDA 
+		  (
+           	                 input logic clk,
+				 input logic reset,
+			         input logic wr_i2c,
+                                 input logic[7:0]  data_in,
+                                 input logic[2:0] cmd,
+				 input logic[15:0] dvsr,
+				 output logic[7:0] data_out,
+				 output logic ready,
+				 output logic done_tick,
+				 output logic ACK,
+				 output tri SCL,
+				 inout tri SDA 
 						                 );
 								
 	
@@ -125,35 +124,33 @@ end
 always_ff@(posedge clk, posedge reset) begin 
 
 
-
-   if(reset) begin 
+ if(reset) begin 
 	
 	    State_reg = idle;
 	    TX_reg <= 0;
-		 RX_reg <= 0;
-       CMD_reg <= 0;
-		 Count_reg <= 0; 
-		 NumBits_reg <= 0;       
-		 done_tick_reg <= 0;
+            RX_reg <= 0;
+            CMD_reg <= 0;
+            Count_reg <= 0; 
+	    NumBits_reg <= 0;       
+	    done_tick_reg <= 0;
+	   
 	      end
    
 	
 	else begin 
 	
-	    State_reg = State_next;
-	    TX_reg <= TX_next;
-		 RX_reg <= RX_next;
-       CMD_reg <= CMD_next;
-		 Count_reg <= Count_next; 
-		 NumBits_reg <= NumBits_next; 
+	   State_reg = State_next;
+	   TX_reg <= TX_next;
+           RX_reg <= RX_next;
+           CMD_reg <= CMD_next;
+           Count_reg <= Count_next; 
+           NumBits_reg <= NumBits_next; 
 	   done_tick_reg <= done_tick_next;
+
 	      end
 			
-			
-
+		
 end
-
-
 
 
 
@@ -166,16 +163,16 @@ always_comb begin
 
    
       State_next = State_reg;
-	   TX_next = TX_reg;
-	   RX_next = RX_reg;
+      TX_next = TX_reg;
+      RX_next = RX_reg;
       CMD_next = CMD_reg;
-	   Count_next = Count_reg +1 ; 
-	   NumBits_next = NumBits_reg; 	
+      Count_next = Count_reg +1 ; 
+      NumBits_next = NumBits_reg; 	
       sda_t = 1'b1;
-		scl_t = 1'b1;
+      scl_t = 1'b1;
       done_tick_next = done_tick_reg;
       ready_t = 1'b0;
-		data_proc = 1'b0;
+      data_proc = 1'b0;
 		
 		
 		 case (State_reg) 
@@ -273,7 +270,7 @@ always_comb begin
 
 						   Stop_CMD: begin 
 							
-				             State_next = stop1;
+				                            State_next = stop1;
 							  
 							
 							end
@@ -281,7 +278,7 @@ always_comb begin
 
 						   default: begin 
 							
-				             State_next = data1;
+				                            State_next = data1;
 							    NumBits_next = 0;
 							    TX_next = { data_in , NACK };
 								 
@@ -307,7 +304,7 @@ always_comb begin
 			         
 				  sda_t = TX_reg[8];
 				  scl_t = 1'b0;
-			     data_proc = 1'b1;
+			          data_proc = 1'b1;
 				  
 				  if(Count_reg==Quarter) begin 
 				  
@@ -331,7 +328,7 @@ always_comb begin
 			         
 				  sda_t = TX_reg[8];
 				  scl_t = 1'b1;    // if we removed it nothing would change as it's pulled up by default
-			     data_proc = 1'b1;
+			          data_proc = 1'b1;
 			     
 				  if(Count_reg==Quarter) begin 
 				  
@@ -355,7 +352,7 @@ always_comb begin
 			         
 				  sda_t = TX_reg[8];
 				  scl_t = 1'b1;    // if we removed it nothing would change as it's pulled up by default
-			     data_proc = 1'b1;
+			          data_proc = 1'b1;
 			     
 				  if(Count_reg==Quarter) begin 
 				  
@@ -378,7 +375,7 @@ always_comb begin
 			         
 				  sda_t = TX_reg[8];
 				  scl_t = 1'b0;    
-			     data_proc = 1'b1;
+			          data_proc = 1'b1;
 			     
 				  if(Count_reg==Quarter) begin 
 				  
@@ -387,7 +384,7 @@ always_comb begin
 				     if(NumBits_reg==8) begin 
 					  
 				       State_next = data_end;
-					    done_tick_next = 1'b1;
+				       done_tick_next = 1'b1;
 
 					  end
 				  
@@ -396,8 +393,8 @@ always_comb begin
 					  else begin 
 					  
 					    TX_next = { TX_reg[7:0] , 1'b0 };
-                   NumBits_next = NumBits_reg + 1;
-				       State_next = data1;
+                                            NumBits_next = NumBits_reg + 1;
+				            State_next = data1;
 					  
 					  end
 					  
